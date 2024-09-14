@@ -20,7 +20,6 @@
       href="https://fonts.googleapis.com/css?family=Bebas+Neue"
       rel="stylesheet"
     />
-    <script src="functions.js" defer></script>
     <title>Thanos Snapchat</title>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
@@ -105,7 +104,9 @@
       </div>
     </div>
   </body>
+  <script src="functions.js" defer></script>
   <script>
+
     function getAllChats() {
       $.ajax({
         type: "POST",
@@ -113,7 +114,7 @@
         data: { functionname: "getListOfChat", userId: 1 },
         success: function (data) {
           var record = JSON.parse(data);
-          console.log(record);
+          populateChatList(record);
         },
       });
     }
