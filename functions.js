@@ -175,6 +175,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  //testing
+
   // Send message on button click
   sendButton.addEventListener("click", sendMessage);
 
@@ -210,5 +212,6 @@ document.addEventListener("DOMContentLoaded", () => {
   $(document).ready(function () {
     populateChatList();
     $(".chat-container").hide();
+    getAllChats();
   });
 });
