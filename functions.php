@@ -1,8 +1,8 @@
 <?php
 
-include("connection.php");
-switch($_POST["functionname"]){
-    case 'getListOfChat':
+        include("connection.php");
+        switch($_POST["functionname"]){
+        case 'getListOfChat':
         $userId = $_POST["userId"];
         $query = "SELECT uc.chat_id, ch.name, ch.avatar FROM userchat as uc 
         INNER JOIN chat as ch ON uc.chat_id = ch.chat_id
