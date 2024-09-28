@@ -103,6 +103,60 @@
         </div>
       </div>
     </div>
+    <script>
+function getChatData(chatId) {
+    $.ajax({
+        type: "POST",
+        url: "functions.php",
+        data: { functionname: "getChatData", chatId: chatId },
+        success: function (data) {
+            var chatData = JSON.parse(data);
+            updateChatHeader(chatData.chatInfo);
+            displayChatMessages(chatData.messages);
+        }
+    });
+}
+
+function updateChatHeader(chatInfo) {
+    const chatHeader = document.querySelector('.chat-header');
+    chatHeader.innerHTML = `
+        <div class="user-img">
+            <img src="${chatInfo.avatar}" alt="User Profile Picture" />
+        </div>
+        <div class="user-details">
+            <h4>${chatInfo.name}</h4>
+            <p>Last seen: ${chatInfo.last_seen}</p>
+            <div class="active-status"></div>
+        </div>
+    `;
+}
+
+function displayChatMessages(messages) {
+    const chatContainer = document.getElementById("chat-container");
+    chatContainer.innerHTML = "";
+
+    messages.forEach(message => {
+        const messageBox = document.createElement("div");
+        messageBox.classList.add("message-box");
+        
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message", message.sender_id === '1' ? "message-right" : "message-left");
+        
+        messageDiv.innerHTML = `
+            <p>
+                ${message.message_text}
+                <br><time>${message.timestamp}</time>
+            </p>
+        `;
+        
+        messageBox.appendChild(messageDiv);
+        chatContainer.appendChild(messageBox);
+    });
+
+    hideChatSelection();
+}
+</script>
+
   </body>
   <script src="functions.js" defer></script>
   <script>

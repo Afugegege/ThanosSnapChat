@@ -40,20 +40,18 @@ function populateChatList(chats) {
     chatBox.addEventListener("click", hideChatSelection);
 
     chatBox.innerHTML = `
-        <div class="img-box">
-          <img src="chat-profile-pic.jpg" alt="Chat Profile Picture" />
-        </div>
-        <div class="chat-details">
-          <div class="text-head">
-            <h4>${chat.name}</h4>
-            <span class="time">${chat.time}</span>
-          </div>
-          <div class="text-message">
-            <p>${retrieveLastMessage(chat.id)}</p>
-            <b>1</b>
-          </div>
-        </div>
-      `;
+    <div class="img-box">
+      <img src="${chat.avatar}" alt="Chat Profile Picture" />
+    </div>
+    <div class="chat-details" onclick="getChatData(${chat.chat_id})">
+      <div class="text-head">
+        <h4>${chat.name}</h4>
+        <span class="time">${chat.time}</span>
+      </div>
+      <div class="text-message">
+        <p>${chat.lastMessage || ""}</p>
+    </div>
+`;
 
     chatBox.addEventListener("click", function () {
       hideChatSelection(); // Hide the chat selection
@@ -71,31 +69,71 @@ function populateChatList(chats) {
 }
 
 // Load chat messages
-function loadChat(chatId) {
-  chatContent.innerHTML = ""; // Clear existing messages
-  const chatMessages = messages.filter((msg) => msg.chatId === chatId);
-  chatMessages.forEach((msg) => {
-    const messageCont = document.createElement("div");
-    messageCont.classList.add("message-box");
-    const messageBox = document.createElement("div");
-    messageBox.classList.add("message");
-    if (msg.sender === "1") {
-      messageBox.classList.add("message-right");
-    } else {
-      messageBox.classList.add("message-left");
-    }
-    const content = document.createElement("p");
-    content.classList.add("latestMsg");
-    content.textContent = msg.text;
-    const time = document.createElement("time");
-    time.textContent = msg.time;
-    content.appendChild(document.createElement("br"));
-    content.appendChild(time);
-    messageBox.appendChild(content);
-    messageCont.appendChild(messageBox);
-    chatContent.appendChild(messageCont);
+function getChatData(chatId) {
+  $.ajax({
+    type: "POST",
+    url: "functions.php",
+    data: { functionname: "getChatData", chatId: chatId },
+    success: function (data) {
+      var chatData = JSON.parse(data);
+      updateChatHeader(chatData.chatInfo);
+      displayChatMessages(chatData.messages);
+    },
+    error: function (xhr, status, error) {
+      // Handle the error here
+      console.error("Error Status: " + status);
+      console.error("Error Message: " + error);
+      console.error("Response Text: " + xhr.responseText);
+
+      // Optionally, display a user-friendly message
+      alert(
+        "An error occurred while fetching chat data. Please try again later."
+      );
+    },
   });
-  scrollToBottom();
+}
+
+function updateChatHeader(chatInfo) {
+  const chatHeader = document.querySelector(".chat-header");
+  chatHeader.innerHTML = `
+    <div class="user-img">
+      <img src="${chatInfo.avatar}" alt="User Profile Picture" />
+    </div>
+    <div class="user-details">
+      <h4>${chatInfo.name}</h4>
+      <p>Last seen: ${chatInfo.last_modify}</p>
+      <div class="active-status"></div>
+    </div>
+  `;
+}
+
+function displayChatMessages(messages) {
+  console.log(messages);
+  const chatContainer = document.getElementById("chat-container");
+  chatContainer.innerHTML = "";
+
+  messages.forEach((message) => {
+    const messageBox = document.createElement("div");
+    messageBox.classList.add("message-box");
+
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add(
+      "message",
+      message.sender_id === 1 ? "message-right" : "message-left"
+    );
+
+    messageDiv.innerHTML = `
+      <p>
+        ${message.content}
+        <br><time>${message.timestamp}</time>
+      </p>
+    `;
+
+    messageBox.appendChild(messageDiv);
+    chatContainer.appendChild(messageBox);
+  });
+
+  hideChatSelection();
 }
 
 // Function to scroll to the bottom of the chat
@@ -143,7 +181,9 @@ function sendMessage() {
     messageDiv.appendChild(messageBox);
     chatContent.appendChild(messageDiv);
     messageInput.value = "";
-    scrollToBottom();
+ const query = `INSERT INTO message (chat_id, content, sender_id, timestamp) VALUES (${selectedChatId}, '${messageText}', 2, '${timeString}')`;
+  }     
+}    scrollToBottom();
 
     addMessage(selectedChatId, messageText, "user", timeString);
     populateChatList(); // Update the chat list to reflect the new message
@@ -161,6 +201,7 @@ function retrieveLastMessage(chatId) {
 // Function to select chat and change background color
 function selectChat(chatId) {
   selectedChatId = chatId; // Set the selected chat ID
+  getChatData(chatId);
   // Reset background color for all chat boxes
   const chatBoxes = document.querySelectorAll(".chat-box");
   chatBoxes.forEach((box) => {
