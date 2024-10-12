@@ -43,7 +43,7 @@ function populateChatList(chats) {
     <div class="img-box">
       <img src="${chat.avatar}" alt="Chat Profile Picture" />
     </div>
-    <div class="chat-details" onclick="getChatData(${chat.chat_id})">
+    <div class="chat-details">
       <div class="text-head">
         <h4>${chat.name}</h4>
         <span class="time">${chat.time}</span>
@@ -55,8 +55,8 @@ function populateChatList(chats) {
 
     chatBox.addEventListener("click", function () {
       hideChatSelection(); // Hide the chat selection
-      selectChat(chat.id); // Call selectChat with the chat ID
-      loadChat(chat.id); // Load the chat messages
+      selectChat(chat.chat_id); // Call selectChat with the chat ID
+      // loadChat(chat.id); // Load the chat messages
     });
 
     chatList.appendChild(chatBox);
@@ -122,10 +122,14 @@ function displayChatMessages(messages) {
       message.sender_id === 1 ? "message-right" : "message-left"
     );
 
+    var formattedTime = new Date(message.timestamp).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     messageDiv.innerHTML = `
       <p>
         ${message.content}
-        <br><time>${message.timestamp}</time>
+        <br><time>${formattedTime}</time>
       </p>
     `;
 
@@ -181,13 +185,11 @@ function sendMessage() {
     messageDiv.appendChild(messageBox);
     chatContent.appendChild(messageDiv);
     messageInput.value = "";
- const query = `INSERT INTO message (chat_id, content, sender_id, timestamp) VALUES (${selectedChatId}, '${messageText}', 2, '${timeString}')`;
-  }     
-}    scrollToBottom();
-
-    addMessage(selectedChatId, messageText, "user", timeString);
-    populateChatList(); // Update the chat list to reflect the new message
   }
+  scrollToBottom();
+
+  addMessage(selectedChatId, messageText, "user", timeString);
+  populateChatList(); // Update the chat list to reflect the new message
 }
 
 // Function to retrieve the last message of a chat
@@ -214,8 +216,6 @@ function selectChat(chatId) {
     selectedChatBox.style.background = "#f9f9f9";
   }
 }
-
-//testing
 
 // Send message on button click
 sendButton.addEventListener("click", sendMessage);

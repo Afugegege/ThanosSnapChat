@@ -110,9 +110,17 @@ function getChatData(chatId) {
         url: "functions.php",
         data: { functionname: "getChatData", chatId: chatId },
         success: function (data) {
-            var chatData = JSON.parse(data);
-            updateChatHeader(chatData.chatInfo);
-            displayChatMessages(chatData.messages);
+            try {
+                var chatData = JSON.parse(data);
+                updateChatHeader(chatData.chatInfo);
+                displayChatMessages(chatData.messages);
+            } catch (error) {
+                console.error("Error parsing JSON:", error);
+                console.log("Raw data received:", data);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error("AJAX error:", textStatus, errorThrown);
         }
     });
 }
@@ -167,9 +175,17 @@ function displayChatMessages(messages) {
         url: "functions.php",
         data: { functionname: "getListOfChat", userId: 1 },
         success: function (data) {
-          var record = JSON.parse(data);
-          populateChatList(record);
+            try {
+                var record = JSON.parse(data);
+                populateChatList(record);
+            } catch (error) {
+                console.error("Error parsing JSON:", error);
+                console.log("Raw data received:", data);
+            }
         },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error("AJAX error:", textStatus, errorThrown);
+        }
       });
     }
 

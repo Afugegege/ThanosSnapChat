@@ -1,7 +1,6 @@
 <?php
-
-        include("connection.php");
-        switch($_POST["functionname"]){
+    include("connection.php");
+    switch($_POST["functionname"]){
         case 'getListOfChat':
             $userId = $_POST["userId"];
             $query = "SELECT uc.chat_id, ch.name, ch.avatar FROM userchat as uc 
@@ -31,7 +30,7 @@
                               WHERE chat_id = ? 
                               ORDER BY timestamp ASC";
             $stmt = $conn->prepare($messagesQuery);
-            $stmt->bind_param("i", $chatId);
+            $stmt->bind_param("i", $chatId);    
             $stmt->execute();
             $messagesResult = $stmt->get_result();
             $messages = array();
