@@ -4,6 +4,7 @@ const searchInput = document.getElementById("search-input");
 const messageInput = document.getElementById("message-input");
 const sendButton = document.getElementById("send-button");
 let selectedChatId = null; // Initialize selectedChatId
+var lastDate = "";
 
 // Sample chat data
 const chats = [
@@ -135,7 +136,6 @@ function displayChatMessages(messages) {
         <br><time>${formattedTime}</time>
       </p>
     `;
-    var datelist = [];
 
     const dateFromTimestamp = new Date(message.timestamp).toLocaleDateString(
       "en-US",
@@ -143,7 +143,7 @@ function displayChatMessages(messages) {
     );
 
     // Check if the date is not in the dateList array
-    if (dateFromTimestamp && !datelist.includes(dateFromTimestamp)) {
+    if (dateFromTimestamp && lastDate != dateFromTimestamp) {
       const currentYear = new Date().getFullYear();
       const messageYear = new Date(message.timestamp).getFullYear();
       const dateFormat =
@@ -155,13 +155,12 @@ function displayChatMessages(messages) {
         dateFormat
       );
 
-      datelist.push(dateFromTimestamp);
+      lastDate = dateFromTimestamp;
       const dateDiv = document.createElement("div");
       dateDiv.classList.add("date-divider");
       dateDiv.textContent = formattedDate;
       chatContainer.appendChild(dateDiv);
       console.log(dateFromTimestamp);
-      console.log(datelist);
     }
 
     messageBox.appendChild(messageDiv);
