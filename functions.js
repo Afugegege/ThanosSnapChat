@@ -122,16 +122,47 @@ function displayChatMessages(messages) {
       message.sender_id === 1 ? "message-right" : "message-left"
     );
 
-    var formattedTime = new Date(message.timestamp).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    var formattedTime = new Date(message.timestamp)
+      .toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      })
+      .replace(/am|pm/i, (match) => match.toUpperCase());
     messageDiv.innerHTML = `
       <p>
         ${message.content}
         <br><time>${formattedTime}</time>
       </p>
     `;
+    var datelist = [];
+
+    const dateFromTimestamp = new Date(message.timestamp).toLocaleDateString(
+      "en-US",
+      { year: "numeric", month: "long", day: "numeric" }
+    );
+
+    // Check if the date is not in the dateList array
+    if (dateFromTimestamp && !datelist.includes(dateFromTimestamp)) {
+      const currentYear = new Date().getFullYear();
+      const messageYear = new Date(message.timestamp).getFullYear();
+      const dateFormat =
+        currentYear === messageYear
+          ? { month: "long", day: "numeric" }
+          : { year: "numeric", month: "long", day: "numeric" };
+      const formattedDate = new Date(message.timestamp).toLocaleDateString(
+        "en-US",
+        dateFormat
+      );
+
+      datelist.push(dateFromTimestamp);
+      const dateDiv = document.createElement("div");
+      dateDiv.classList.add("date-divider");
+      dateDiv.textContent = formattedDate;
+      chatContainer.appendChild(dateDiv);
+      console.log(dateFromTimestamp);
+      console.log(datelist);
+    }
 
     messageBox.appendChild(messageDiv);
     chatContainer.appendChild(messageBox);
