@@ -6,22 +6,6 @@ const sendButton = document.getElementById("send-button");
 let selectedChatId = null; // Initialize selectedChatId
 var lastDate = "";
 
-// Sample chat data
-const chats = [
-  { id: 1, name: "irfan", lastMessage: "Hey there!", time: "10:00 AM" },
-  { id: 2, name: "June", lastMessage: "Hello!", time: "11:00 AM" },
-];
-
-// Sample chat messages
-const messages = [
-  { chatId: 1, text: "Hello!", sender: "1", time: "10:00 AM" },
-  { chatId: 1, text: "Hi, how are you?", sender: "2", time: "11:00 AM" },
-  { chatId: 1, text: "Okay ba", sender: "1", time: "11:01 AM" },
-  { chatId: 2, text: "Wyd?", sender: "1", time: "10:00 AM" },
-  { chatId: 2, text: "Nothing", sender: "2", time: "11:00 AM" },
-  { chatId: 2, text: "Okay bye", sender: "1", time: "11:01 AM" },
-];
-
 function hideChatSelection() {
   $(".chat-container").show();
   $(".chat-selection").hide();
@@ -202,7 +186,7 @@ function sendMessage() {
     hours = hours ? hours : 12; // The hour '0' should be '12'
     minutes = minutes < 10 ? "0" + minutes : minutes;
 
-    const timeString = hours + ":" + minutes + " " + ampm;
+    var timeString = hours + ":" + minutes + " " + ampm;
 
     // Add the message to the chat
     const messageDiv = document.createElement("div");
@@ -218,8 +202,36 @@ function sendMessage() {
   }
   scrollToBottom();
 
-  addMessage(selectedChatId, messageText, "user", timeString);
-  populateChatList(); // Update the chat list to reflect the new message
+  saveMessage(selectedChatId, 1, messageText, timeString);
+}
+
+// Load chat messages
+function saveMessage(chatId, senderId, messageText) {
+  $.ajax({
+    type: "POST",
+    url: "functions.php",
+    data: {
+      functionname: "sendMessage",
+      chatId: chatId,
+      senderId: senderId,
+      content: messageText,
+    },
+    success: function (data) {
+      alert(data);
+      getAllChats();
+    },
+    error: function (xhr, status, error) {
+      // Handle the error here
+      console.error("Error Status: " + status);
+      console.error("Error Message: " + error);
+      console.error("Response Text: " + xhr.responseText);
+
+      // Optionally, display a user-friendly message
+      alert(
+        "An error occurred while fetching chat data. Please try again later."
+      );
+    },
+  });
 }
 
 // Function to retrieve the last message of a chat

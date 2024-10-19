@@ -45,6 +45,21 @@
         
             echo json_encode($chatData);
             break;
+
+        case 'sendMessage':
+            $chatId = $_POST["chatId"];
+            $senderId = $_POST["senderId"];
+            $content = $_POST["content"];
+            $timestamp = date("Y-m-d h:i:sa");
+            $sql = "INSERT INTO message (chat_id, sender_id, content, timestamp) VALUES ({$chatId}, {$senderId}, '{$content}', '{$timestamp}')";
+            if ($conn->query($sql) === TRUE) {
+                echo "New record created successfully";
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
+            
+            $conn->close();
+            break;
         
 }
 

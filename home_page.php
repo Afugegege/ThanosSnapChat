@@ -187,6 +187,7 @@ function displayChatMessages(messages) {
             console.error("AJAX error:", textStatus, errorThrown);
         }
       });
+      scrollToBottom();
     }
 
     $(document).ready(function () {
